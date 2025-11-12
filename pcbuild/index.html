@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC Builder Simulator - Modern Build Konfigurátor</title>
+    <meta name="description" content="Professzionális PC építő szimulátor a legújabb technológiákkal. Építsd meg álmaid számítógépét!">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🖥️</text></svg>">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <i class="fas fa-desktop"></i>
+                <h2>PC Builder Simulator</h2>
+            </div>
+            <div class="loading-spinner"></div>
+            <p>Komponensek betöltése...</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-desktop"></i>
+                <span>PC Builder Pro</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-btn active" data-tab="builder">
+                    <i class="fas fa-tools"></i>
+                    <span>Builder</span>
+                </button>
+                <button class="nav-btn" data-tab="prebuilds">
+                    <i class="fas fa-star"></i>
+                    <span>Előre Konfig</span>
+                </button>
+                <button class="nav-btn" data-tab="build2d">
+                    <i class="fas fa-puzzle-piece"></i>
+                    <span>2D Builder</span>
+                </button>
+                <button class="nav-btn" data-tab="benchmark">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Benchmark</span>
+                </button>
+            </div>
+            <div class="nav-controls">
+                <button id="themeToggle" class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button id="saveConfig" class="save-btn">
+                    <i class="fas fa-save"></i>
+                    <span>Mentés</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Builder Tab -->
+        <div id="builderTab" class="tab-content active">
+            <div class="builder-container">
+                <!-- Component Selection Panel -->
+                <div class="components-panel">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-microchip"></i> Komponensek</h2>
+                        <div class="search-container">
+                            <input type="text" id="componentSearch" placeholder="Komponens keresése...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="component-categories">
+                        <div class="category-item active" data-category="cpu">
+                            <i class="fas fa-microchip"></i>
+                            <span>Processzor (CPU)</span>
+                            <div class="category-status">
+                                <span class="status-indicator"></span>
+                            </div>
+                        </div>
+                        <div class="category-item" data-category="gpu">
+                            <i class="fas fa-tv"></i>
+                            <span>Videokártya (GPU)</span>
+                            <div class="category-status">
+                                <span class="status-indicator"></span>
+                            </div>
+                        </div>
+                        <div class="category-item" data-category="motherboard">
+                            <i class="fas fa-memory"></i>
+                            <span>Alaplap</span>
+                            <div class="category-status">
+                                <span class="status-indicator"></span>
+                            </div>
+                        </div>
+                        <div class="category-item" data-category="ram">
+                            <i class="fas fa-memory"></i>
+                            <span>Memória (RAM)</span>
+                            <div class="category-status">
+                                <span class="status-indicator"></span>
+                            </div>
+                        </div>
+                        <div class="category-item" data-category="storage">
+                            <i class="fas fa-hdd"></i>
+                            <span>Tárhely</span>
+                            <div class="category-status">
+                                <span class="status-indicator"></span>
+                            </div>
+                        </div>
+                        <div class="category-item" data-category="psu">
+                            <i class="fas fa-plug"></i>
+                            <span>Tápegység</span>
+                            <div class="category-status">
+                                <span class="status-indicator"></span>
+                            </div>
+                        </div>
+                        <div class="category-item" data-category="case">
+                            <i class="fas fa-cube"></i>
+                            <span>Számítógépház</span>
+                            <div class="category-status">
+                                <span class="status-indicator"></span>
+                            </div>
+                        </div>
+                        <div class="category-item" data-category="cooling">
+                            <i class="fas fa-fan"></i>
+                            <span>Hűtés</span>
+                            <div class="category-status">
+                                <span class="status-indicator"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="component-list" id="componentList">
+                        <!-- Components will be dynamically loaded here -->
+                    </div>
+                </div>
+
+                <!-- Build Summary Panel -->
+                <div class="build-panel">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-desktop"></i> Build Összegzés</h2>
+                        <div class="build-actions">
+                            <button id="clearBuild" class="clear-btn">
+                                <i class="fas fa-trash"></i>
+                                <span>Törlés</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Selected Components -->
+                    <div class="selected-components" id="selectedComponents">
+                        <!-- Selected components will be shown here -->
+                    </div>
+
+                    <!-- Build Stats -->
+                    <div class="build-stats">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-label">Összár</span>
+                                    <span class="stat-value" id="totalPrice">0 Ft</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-label">Fogyasztás</span>
+                                    <span class="stat-value" id="totalPower">0W</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-gamepad"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-label">Gaming Score</span>
+                                    <span class="stat-value" id="gamingScore">0</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-cogs"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-label">Work Score</span>
+                                    <span class="stat-value" id="workScore">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Compatibility Warnings -->
+                    <div class="compatibility-panel" id="compatibilityPanel">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Kompatibilitás</h3>
+                        <div class="warnings-list" id="warningsList">
+                            <!-- Warnings will be shown here -->
+                        </div>
+                    </div>
+
+                    <!-- Performance Preview -->
+                    <div class="performance-preview" id="performancePreview">
+                        <h3><i class="fas fa-chart-line"></i> Teljesítmény Előnézet</h3>
+                        <div class="performance-bars">
+                            <!-- Performance bars will be generated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prebuilds Tab -->
+        <div id="prebuildsTab" class="tab-content">
+            <div class="prebuilds-container">
+                <div class="prebuilds-header">
+                    <h2>Előre Konfigurált Gépek</h2>
+                    <p>Válassz a professzionálisan összeállított konfigurációk közül</p>
+                </div>
+                <div class="prebuilds-grid" id="prebuildsGrid">
+                    <!-- Prebuild cards will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 2D Builder Tab -->
+        <div id="build2dTab" class="tab-content">
+            <div class="build2d-container">
+                <div class="build2d-header">
+                    <h2><i class="fas fa-puzzle-piece"></i> 2D PC Builder</h2>
+                    <p>Rakd össze a PC-t 2D-ben! Húzd be a komponenseket a megfelelő helyekre.</p>
+                </div>
+                <div class="build2d-workspace">
+                    <div class="component-inventory">
+                        <h3><i class="fas fa-toolbox"></i> Kiválasztott Komponensek</h3>
+                        <div class="inventory-items" id="inventory2d">
+                            <!-- Selected components will appear here for dragging -->
+                        </div>
+                    </div>
+                    <div class="visual-build-area">
+                        <div class="motherboard-visual-container">
+                            <!-- Background motherboard image -->
+                            <div class="motherboard-visual" id="motherboardVisual">
+                            <img src="images/alaplap.jpg" alt="Motherboard" class="motherboard-img" draggable="false">
+                                
+                                <!-- CPU Socket - centered top area -->
+                                <div class="visual-drop-zone cpu-drop-zone" data-slot-type="cpu" id="visual-cpu-slot" 
+                                     style="position: absolute; left: 370px; top: 150px; width: 120px; height: 120px; z-index: 5;">
+                                    <div class="drop-zone-content" id="cpu-visual-content"></div>
+                                </div>
+                                
+                                <!-- CPU Cooler - overlaps CPU socket -->
+                                <div class="visual-drop-zone cooling-drop-zone" data-slot-type="cooling" id="visual-cooling-slot" 
+                                     style="position: absolute; left: 340px; top: 120px; width: 180px; height: 180px; z-index: 15;">
+                                    <div class="drop-zone-content" id="cooling-visual-content"></div>
+                                </div>
+                                
+                                <!-- RAM Slots - 2 rightmost vertical slots -->
+                                <div class="visual-drop-zone ram-drop-zone" data-slot-type="ram" data-slot-index="0" id="visual-ram-slot-0" 
+                                     style="position: absolute; left: 541px; top: 85px; width: 28px; height: 250px;">
+                                    <div class="drop-zone-content" id="ram-0-visual-content"></div>
+                                </div>
+                                
+                                <div class="visual-drop-zone ram-drop-zone" data-slot-type="ram" data-slot-index="1" id="visual-ram-slot-1" 
+                                     style="position: absolute; left: 574px; top: 85px; width: 28px; height: 250px;">
+                                    <div class="drop-zone-content" id="ram-1-visual-content"></div>
+                                </div>
+                                
+                                <!-- GPU Slot - large horizontal slot at the bottom -->
+                                <div class="visual-drop-zone gpu-drop-zone" data-slot-type="gpu" id="visual-gpu-slot" 
+                                     style="position: absolute; left: 200px; top: 425px; width: 420px; height: 120px;">
+                                    <div class="drop-zone-content" id="gpu-visual-content"></div>
+                                </div>
+                                
+                                <!-- M.2 SSD Slots - two horizontal slots below GPU area -->
+                               
+                                
+                                <div class="visual-drop-zone m2-drop-zone" data-slot-type="storage" data-slot-index="1" id="visual-m2-slot-1" 
+                                     style="position: absolute; left: 430px; top: 380px; width: 200px; height: 45px;">
+                                    <div class="drop-zone-content" id="m2-1-visual-content"></div>
+                                </div>
+                                
+                                <!-- PSU Slot - left side of motherboard -->
+                                <div class="visual-drop-zone psu-drop-zone" data-slot-type="psu" id="visual-psu-slot" 
+                                     style="position: absolute; left: 10px; top: 400px; width: 160px; height: 180px; z-index: 10;">
+                                    <div class="drop-zone-content" id="psu-visual-content"></div>
+                                </div>
+                                
+                                <!-- Case Slot - right side of motherboard -->
+                                <div class="visual-drop-zone case-drop-zone" data-slot-type="case" id="visual-case-slot" 
+                                     style="position: absolute; right: -20px; top: 230px; width: 160px; height: 360px; z-index: 10;">
+                                    <div class="drop-zone-content" id="case-visual-content"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="build2d-controls">
+                    <button id="clearBuild2d" class="btn btn-warning">
+                        <i class="fas fa-undo"></i> Összes Eltávolítása
+                    </button>
+                    <button id="autoBuild2d" class="btn btn-primary">
+                        <i class="fas fa-magic"></i> Automatikus Összerakás
+                    </button>
+                    <button id="toggle2DNotifications" class="btn btn-secondary" title="2D Builder értesítések kikapcsolása">
+                        <i class="fas fa-bell"></i> Értesítések
+                    </button>
+                </div>
+                
+                <div class="build2d-info">
+                    <h3><i class="fas fa-info-circle"></i> Útmutató</h3>
+                    <ul>
+                        <li>Válaszd ki a komponenseket a Builder fülön</li>
+                        <li>Húzd át a komponenseket a megfelelő helyekre</li>
+                        <li>A processzort a hűtő területére is ráhúzhatod - automatikusan a CPU foglalatba kerül</li>
+                        <li>RAM-ot többször is húzhatsz ugyanabból a típusból</li>
+                        <li>Zöld: jó helyen, Piros: rossz helyen, Narancssárga: átirányítás</li>
+                        <li>Dupla klikk a komponensre az eltávolításhoz</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Benchmark Tab -->
+        <div id="benchmarkTab" class="tab-content">
+            <div class="benchmark-container">
+                <div class="benchmark-header">
+                    <h2>Benchmark Eredmények</h2>
+                    <p>Nézd meg a build teljesítményét különböző feladatokban</p>
+                </div>
+                <div class="benchmark-content" id="benchmarkContent">
+                    <!-- Benchmark results will be shown here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <!-- Component Details Modal -->
+    <div id="componentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Komponens Részletek</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Component details will be shown here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Save/Load Modal -->
+    <div id="saveModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Konfiguráció Mentése/Betöltése</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="save-section">
+                    <h4>Mentés</h4>
+                    <input type="text" id="configName" placeholder="Konfiguráció neve...">
+                    <button id="saveConfigBtn" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Mentés
+                    </button>
+                </div>
+                <div class="load-section">
+                    <h4>Betöltés</h4>
+                    <div id="savedConfigs" class="saved-configs">
+                        <!-- Saved configurations will be listed here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container">
+        <!-- Toast messages will appear here -->
+    </div>
+
+    <!-- Scripts -->
+    <script src="components-data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

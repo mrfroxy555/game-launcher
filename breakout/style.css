@@ -1,0 +1,8 @@
+/* Minimal dark style */
+:root{ --bg:#0f131a; --panel:#141b2d; --text:#e7e9ed; --muted:#aab3c5 }
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,Segoe UI}
+.wrap{max-width:520px;margin:40px auto;padding:0 16px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+#new{margin-left:auto;background:transparent;border:1px solid #2a3556;color:var(--text);padding:8px 10px;border-radius:10px;cursor:pointer}
+canvas{width:100%;height:auto;display:block;background:linear-gradient(180deg,#0c1221,#0a0f1a);border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.35)}
+.hint{color:var(--muted);text-align:center}

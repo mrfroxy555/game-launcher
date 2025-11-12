@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Game Launcher</title>
+  <link rel="preload" href="assets/styles.css" as="style" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <canvas id="bg" aria-hidden="true"></canvas>
+  <main class="container">
+    <div class="header">
+      <div class="h-title">Összes játék</div>
+      <div class="h-count" data-count>0</div>
+      <div class="spacer"></div>
+    </div>
+
+    <div class="controls">
+      <input class="search" type="search" placeholder="Keresés…" aria-label="Keresés" data-search />
+    </div>
+
+    <section class="grid" data-grid aria-live="polite"></section>
+
+  </main>
+
+  <script src="assets/bg.js" defer></script>
+  <script src="assets/app.js" defer></script>
+</body>
+</html>

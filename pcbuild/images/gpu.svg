@@ -1,0 +1,73 @@
+<svg width="300" height="100" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- GPU PCB -->
+  <rect x="5" y="20" width="290" height="60" rx="4" fill="#2d5a2d" stroke="#4a5568" stroke-width="2"/>
+  
+  <!-- GPU cooler shroud -->
+  <rect x="10" y="10" width="280" height="80" rx="6" fill="#2d3748" stroke="#4a5568" stroke-width="2"/>
+  
+  <!-- Fans -->
+  <g fill="#1a202c" stroke="#4a5568" stroke-width="1">
+    <circle cx="70" cy="50" r="25"/>
+    <circle cx="150" cy="50" r="25"/>
+    <circle cx="230" cy="50" r="25"/>
+  </g>
+  
+  <!-- Fan blades -->
+  <g fill="#4a5568" stroke="#718096" stroke-width="0.5">
+    <!-- Fan 1 -->
+    <path d="M70 30 Q60 40 70 50 Q80 40 70 30"/>
+    <path d="M90 50 Q80 40 70 50 Q80 60 90 50"/>
+    <path d="M70 70 Q80 60 70 50 Q60 60 70 70"/>
+    <path d="M50 50 Q60 60 70 50 Q60 40 50 50"/>
+    
+    <!-- Fan 2 -->
+    <path d="M150 30 Q140 40 150 50 Q160 40 150 30"/>
+    <path d="M170 50 Q160 40 150 50 Q160 60 170 50"/>
+    <path d="M150 70 Q160 60 150 50 Q140 60 150 70"/>
+    <path d="M130 50 Q140 60 150 50 Q140 40 130 50"/>
+    
+    <!-- Fan 3 -->
+    <path d="M230 30 Q220 40 230 50 Q240 40 230 30"/>
+    <path d="M250 50 Q240 40 230 50 Q240 60 250 50"/>
+    <path d="M230 70 Q240 60 230 50 Q220 60 230 70"/>
+    <path d="M210 50 Q220 60 230 50 Q220 40 210 50"/>
+  </g>
+  
+  <!-- Fan centers -->
+  <g fill="#2d3748">
+    <circle cx="70" cy="50" r="6"/>
+    <circle cx="150" cy="50" r="6"/>
+    <circle cx="230" cy="50" r="6"/>
+  </g>
+  
+  <!-- PCIe connector -->
+  <rect x="2" y="75" width="20" height="10" rx="1" fill="#fbd38d" stroke="#d69e2e" stroke-width="1"/>
+  
+  <!-- Display outputs -->
+  <g fill="#1a202c" stroke="#4a5568" stroke-width="1">
+    <rect x="275" y="25" width="18" height="8" rx="1"/>
+    <rect x="275" y="35" width="18" height="8" rx="1"/>
+    <rect x="275" y="45" width="18" height="8" rx="1"/>
+    <rect x="275" y="55" width="18" height="8" rx="1"/>
+  </g>
+  
+  <!-- Power connectors -->
+  <g fill="#2d3748" stroke="#4a5568" stroke-width="1">
+    <rect x="250" y="5" width="15" height="8" rx="1"/>
+    <rect x="270" y="5" width="15" height="8" rx="1"/>
+  </g>
+  
+  <!-- Heat sinks -->
+  <g stroke="#718096" stroke-width="1" fill="none">
+    <line x1="20" y1="15" x2="280" y2="15"/>
+    <line x1="20" y1="18" x2="280" y2="18"/>
+    <line x1="20" y1="21" x2="280" y2="21"/>
+  </g>
+  
+  <!-- Brand text -->
+  <text x="150" y="40" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#e2e8f0" font-weight="bold">RTX 4090</text>
+  <text x="150" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#cbd5e1">GeForce RTX</text>
+  
+  <!-- LED strip -->
+  <rect x="15" y="25" width="270" height="2" rx="1" fill="#10b981" opacity="0.8"/>
+</svg>

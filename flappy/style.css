@@ -1,0 +1,11 @@
+/* Platform Jumper style */
+:root{ --bg:#0a0e1a; --text:#e7e9ed; --muted:#aab3c5; --accent:#2ed3b7; --platform:#4a5568 }
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,Segoe UI}
+.wrap{max-width:520px;margin:40px auto;padding:0 16px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+h1{margin:0;font-size:24px}
+.score{color:var(--muted);font-weight:bold}
+#new{margin-left:auto;background:transparent;border:1px solid #2a3556;color:var(--text);padding:8px 16px;border-radius:8px;cursor:pointer;transition:all 0.2s}
+#new:hover{background:#2a3556;border-color:#2ed3b7}
+canvas{width:100%;height:auto;background:linear-gradient(180deg,#1a1f2e 0%,#0a0e1a 100%);border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.5);display:block}
+.hint{color:var(--muted);text-align:center;margin-top:12px;font-size:14px}

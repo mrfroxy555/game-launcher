@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simon</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <h1>Simon</h1>
+      <button id="new">Start</button>
+    </header>
+    <section class="board" id="board" aria-label="Simon színek">
+      <button class="pad p0" data-id="0" aria-label="zöld"></button>
+      <button class="pad p1" data-id="1" aria-label="piros"></button>
+      <button class="pad p2" data-id="2" aria-label="sárga"></button>
+      <button class="pad p3" data-id="3" aria-label="kék"></button>
+    </section>
+    <p class="hint">Ismételd a mintát! Szint: <span id="lvl">0</span></p>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>

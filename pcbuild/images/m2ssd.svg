@@ -1,0 +1,28 @@
+<svg width="60" height="8" viewBox="0 0 60 8" xmlns="http://www.w3.org/2000/svg">
+  <!-- M.2 SSD PCB -->
+  <rect x="0" y="1" width="60" height="6" rx="1" fill="#2d5a2d" stroke="#4a5568" stroke-width="0.5"/>
+  
+  <!-- NAND chips -->
+  <g fill="#1a202c" stroke="#2d3748" stroke-width="0.25">
+    <rect x="5" y="1.5" width="8" height="5" rx="0.3"/>
+    <rect x="15" y="1.5" width="8" height="5" rx="0.3"/>
+    <rect x="25" y="1.5" width="8" height="5" rx="0.3"/>
+    <rect x="35" y="1.5" width="8" height="5" rx="0.3"/>
+    <rect x="45" y="1.5" width="8" height="5" rx="0.3"/>
+  </g>
+  
+  <!-- Controller chip -->
+  <rect x="2" y="2" width="6" height="4" rx="0.3" fill="#4a5568" stroke="#718096" stroke-width="0.25"/>
+  
+  <!-- Gold connector -->
+  <rect x="0" y="2.5" width="3" height="3" rx="0.2" fill="#fbd38d" stroke="#d69e2e" stroke-width="0.25"/>
+  
+  <!-- Mounting screw hole -->
+  <circle cx="55" cy="4" r="1" fill="none" stroke="#4a5568" stroke-width="0.5"/>
+  
+  <!-- Brand label -->
+  <text x="30" y="5" text-anchor="middle" font-family="Arial, sans-serif" font-size="1.5" fill="#e2e8f0" font-weight="bold">Samsung 990 PRO</text>
+  
+  <!-- Capacity label -->
+  <text x="50" y="3.5" text-anchor="middle" font-family="Arial, sans-serif" font-size="1" fill="#cbd5e1">1TB</text>
+</svg>

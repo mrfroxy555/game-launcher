@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kod kitalalo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>💡 Találd ki a kódot!</h1>
+    
+    <div class="game-settings">
+      <div class="setting-group">
+        <label for="gameMode">Játék típusa:</label>
+        <select id="gameMode" onchange="updateGame()">
+          <option value="numbers">Számok (0-9)</option>
+          <option value="letters">Betűk (A-Z)</option>
+        </select>
+      </div>
+      
+      <div class="setting-group">
+        <label for="codeLength">Kód hossza (1-50):</label>
+        <input type="number" id="codeLength" min="1" max="50" value="4" onchange="updateGame()">
+      </div>
+    </div>
+    
+    <p id="gameDescription">Találd ki a 4 számjegyű kódot (0-9 közötti számok, ismétlődhetnek)!</p>
+    <input type="text" id="guessInput" maxlength="4" pattern="\d{4}" placeholder="1234">
+    <button onclick="checkGuess()">Ellenőrzés</button>
+    <button onclick="newGame()">Új játék</button>
+    <div id="feedback"></div>
+  </div>
+  
+  <div class="admin-panel">
+    <button id="adminBtn" onclick="showAdminPanel()">Admin</button>
+    <div id="solutionDisplay" class="solution-hidden"></div>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rák Klikkelő</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .setup-screen, .game-screen {
+            display: none;
+        }
+
+        .setup-screen.active, .game-screen.active {
+            display: block;
+        }
+
+        .settings-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .difficulty-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .difficulty-btn {
+            padding: 15px;
+            border: 3px solid #ddd;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .difficulty-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .difficulty-btn.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .start-btn, .restart-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .start-btn:hover, .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .control-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .control-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .pause-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .new-game-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .stop-btn {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .game-area {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3e7ff 100%);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-area.paused::after {
+            content: '⏸️ SZÜNET';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+        }
+
+        .crab {
+            position: absolute;
+            font-size: 3em;
+            cursor: pointer;
+            transition: transform 0.1s;
+            user-select: none;
+            animation: appear 0.3s ease-out;
+        }
+
+        .crab:hover {
+            transform: scale(1.2);
+        }
+
+        .crab:active {
+            transform: scale(0.9);
+        }
+
+        @keyframes appear {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .result-screen {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .result-screen.active {
+            display: block;
+        }
+
+        .result-title {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .result-stats {
+            background: #f8f9ff;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .result-stat {
+            font-size: 1.3em;
+            margin: 15px 0;
+            color: #333;
+        }
+
+        .result-stat strong {
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .game-area {
+                height: 300px;
+            }
+
+            .crab {
+                font-size: 2.5em;
+            }
+
+            .stat-value {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🦀 Rák Klikkelő</h1>
+
+        <div class="setup-screen active">
+             <div class="settings-group">
+                <label for="crabCount">Rákok száma:</label>
+                <input type="number" id="crabCount" value="50" min="1" max="500" step="1">
+            </div>
+
+            <div class="settings-group">
+                <label>Nehézség:</label>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn" data-difficulty="easy">😊 Könnyű</button>
+                    <button class="difficulty-btn selected" data-difficulty="medium">😐 Közepes</button>
+                    <button class="difficulty-btn" data-difficulty="hard">😰 Nehéz</button>
+                </div>
+            </div>
+
+            <button class="start-btn">Játék Kezdése</button>
+        </div>
+
+        <div class="game-screen">
+            <div class="control-buttons">
+                <button class="control-btn pause-btn" id="pauseBtn">⏸️ Szünet</button>
+                <button class="control-btn new-game-btn" id="newGameBtn">🔄 Új Játék</button>
+                <button class="control-btn stop-btn" id="stopBtn">⏹️ Leállítás</button>
+            </div>
+
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-label">Pontszám</div>
+                    <div class="stat-value" id="score">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Hátralevő</div>
+                    <div class="stat-value" id="remaining">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Átlag reakcióidő</div>
+                    <div class="stat-value" id="avgTime">0ms</div>
+                </div>
+            </div>
+
+            <div class="game-area" id="gameArea"></div>
+        </div>
+
+        <div class="result-screen">
+            <div class="result-title">🎉 Játék Vége!</div>
+            <div class="result-stats">
+                <div class="result-stat">Összpontszám: <strong id="finalScore">0</strong></div>
+                <div class="result-stat">Elkapott rákok: <strong id="finalCaught">0</strong></div>
+                <div class="result-stat">Átlagos reakcióidő: <strong id="finalAvgTime">0ms</strong></div>
+                <div class="result-stat">Leggyorsabb kattintás: <strong id="fastestClick">0ms</strong></div>
+            </div>
+            <button class="restart-btn">Újra Játszom</button>
+        </div>
+    </div>
+
+    <script>
+        const game = {
+            score: 0,
+            crabsRemaining: 0,
+            totalCrabs: 0,
+            reactionTimes: [],
+            difficulty: 'medium',
+            crabAppearTime: 0,
+            isPaused: false,
+            currentTimeout: null,
+            currentCrab: null,
+            difficulties: {
+                easy: { minDelay: 800, maxDelay: 1500, displayTime: 1200 },
+                medium: { minDelay: 500, maxDelay: 1000, displayTime: 900 },
+                hard: { minDelay: 300, maxDelay: 600, displayTime: 600 }
+            }
+        };
+
+        const elements = {
+            setupScreen: document.querySelector('.setup-screen'),
+            gameScreen: document.querySelector('.game-screen'),
+            resultScreen: document.querySelector('.result-screen'),
+            gameArea: document.getElementById('gameArea'),
+            crabCountInput: document.getElementById('crabCount'),
+            startBtn: document.querySelector('.start-btn'),
+            restartBtn: document.querySelector('.restart-btn'),
+            pauseBtn: document.getElementById('pauseBtn'),
+            newGameBtn: document.getElementById('newGameBtn'),
+            stopBtn: document.getElementById('stopBtn'),
+            difficultyBtns: document.querySelectorAll('.difficulty-btn'),
+            score: document.getElementById('score'),
+            remaining: document.getElementById('remaining'),
+            avgTime: document.getElementById('avgTime')
+        };
+
+        elements.difficultyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                elements.difficultyBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                game.difficulty = btn.dataset.difficulty;
+            });
+        });
+
+        elements.startBtn.addEventListener('click', startGame);
+        elements.restartBtn.addEventListener('click', resetGame);
+        elements.pauseBtn.addEventListener('click', togglePause);
+        elements.newGameBtn.addEventListener('click', () => {
+            stopGame();
+            startGame();
+        });
+        elements.stopBtn.addEventListener('click', stopGame);
+
+        function startGame() {
+            game.totalCrabs = parseInt(elements.crabCountInput.value) || 50;
+            game.crabsRemaining = game.totalCrabs;
+            game.score = 0;
+            game.reactionTimes = [];
+
+            elements.setupScreen.classList.remove('active');
+            elements.gameScreen.classList.add('active');
+
+            updateStats();
+            spawnCrab();
+        }
+
+        function spawnCrab() {
+            if (game.crabsRemaining <= 0) {
+                endGame();
+                return;
+            }
+
+            if (game.isPaused) return;
+
+            const settings = game.difficulties[game.difficulty];
+            const delay = Math.random() * (settings.maxDelay - settings.minDelay) + settings.minDelay;
+
+            game.currentTimeout = setTimeout(() => {
+                if (game.isPaused) return;
+
+                const crab = document.createElement('div');
+                crab.className = 'crab';
+                crab.textContent = '🦀';
+
+                const maxX = elements.gameArea.clientWidth - 60;
+                const maxY = elements.gameArea.clientHeight - 60;
+                
+                crab.style.left = Math.random() * maxX + 'px';
+                crab.style.top = Math.random() * maxY + 'px';
+
+                game.crabAppearTime = Date.now();
+                game.currentCrab = crab;
+
+                crab.addEventListener('click', () => {
+                    if (game.isPaused) return;
+
+                    const reactionTime = Date.now() - game.crabAppearTime;
+                    game.reactionTimes.push(reactionTime);
+                    
+                    const points = Math.max(1000 - reactionTime, 100);
+                    game.score += Math.round(points);
+                    game.crabsRemaining--;
+
+                    crab.remove();
+                    game.currentCrab = null;
+                    updateStats();
+                    spawnCrab();
+                });
+
+                elements.gameArea.appendChild(crab);
+
+                game.currentTimeout = setTimeout(() => {
+                    if (crab.parentElement && !game.isPaused) {
+                        crab.remove();
+                        game.currentCrab = null;
+                        game.crabsRemaining--;
+                        updateStats();
+                        spawnCrab();
+                    }
+                }, settings.displayTime);
+            }, delay);
+        }
+
+        function updateStats() {
+            elements.score.textContent = game.score;
+            elements.remaining.textContent = game.crabsRemaining;
+            
+            if (game.reactionTimes.length > 0) {
+                const avg = game.reactionTimes.reduce((a, b) => a + b, 0) / game.reactionTimes.length;
+                elements.avgTime.textContent = Math.round(avg) + 'ms';
+            }
+        }
+
+        function endGame() {
+            elements.gameScreen.classList.remove('active');
+            elements.resultScreen.classList.add('active');
+
+            const caught = game.reactionTimes.length;
+            const avgTime = caught > 0 
+                ? Math.round(game.reactionTimes.reduce((a, b) => a + b, 0) / caught) 
+                : 0;
+            const fastest = caught > 0 ? Math.min(...game.reactionTimes) : 0;
+
+            document.getElementById('finalScore').textContent = game.score;
+            document.getElementById('finalCaught').textContent = caught + ' / ' + game.totalCrabs;
+            document.getElementById('finalAvgTime').textContent = avgTime + 'ms';
+            document.getElementById('fastestClick').textContent = fastest + 'ms';
+        }
+
+        function resetGame() {
+            elements.resultScreen.classList.remove('active');
+            elements.setupScreen.classList.add('active');
+            elements.gameArea.innerHTML = '';
+            clearTimeout(game.currentTimeout);
+            game.isPaused = false;
+        }
+
+        function togglePause() {
+            game.isPaused = !game.isPaused;
+            
+            if (game.isPaused) {
+                elements.pauseBtn.textContent = '▶️ Folytatás';
+                elements.gameArea.classList.add('paused');
+                clearTimeout(game.currentTimeout);
+            } else {
+                elements.pauseBtn.textContent = '⏸️ Szünet';
+                elements.gameArea.classList.remove('paused');
+                spawnCrab();
+            }
+        }
+
+        function stopGame() {
+            clearTimeout(game.currentTimeout);
+            elements.gameArea.innerHTML = '';
+            elements.gameScreen.classList.remove('active');
+            elements.setupScreen.classList.add('active');
+            game.isPaused = false;
+            elements.pauseBtn.textContent = '⏸️ Szünet';
+            elements.gameArea.classList.remove('paused');
+        }
+    </script>
+</body>
+</html>

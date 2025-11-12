@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Többjátékos Tank Játék</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+        }
+
+        #jatekVaszon {
+            display: block;
+            width: 100%;
+            height: 100vh;
+        }
+
+        #felhasznaloiFelulet {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        #iranyitasok {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        #szerverPanel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            background: rgba(0,0,0,0.8);
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            min-width: 250px;
+        }
+
+        #szerverKod {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4CAF50;
+            text-align: center;
+            padding: 10px;
+            background: rgba(76, 175, 80, 0.2);
+            border-radius: 5px;
+            margin: 10px 0;
+            letter-spacing: 5px;
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+            .input-group label {
+                display: block;
+                margin-bottom: 5px;
+                font-size: 12px;
+            }
+
+            .input-group input {
+                width: 100%;
+                padding: 8px;
+                border: none;
+                border-radius: 5px;
+                font-size: 18px;
+                text-align: center;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                box-sizing: border-box;
+            }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+            button:hover {
+                background: #45a049;
+            }
+
+        .jatekos-elem {
+            margin: 8px 0;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        #jatekosLista {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        #minimap {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
+            background: rgba(0,0,0,0.8);
+            border: 2px solid #fff;
+            border-radius: 10px;
+            display: none;
+        }
+
+        #powerupInfo {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: white;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 250px;
+        }
+
+        .powerup-aktiv {
+            background: rgba(76, 175, 80, 0.3) !important;
+            border: 2px solid #4CAF50 !important;
+        }
+
+        #spectatorPanel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            display: none;
+        }
+
+        #palyaValasztoPanel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            color: white;
+            text-align: center;
+            display: none;
+            z-index: 1001;
+            max-width: 600px;
+        }
+
+        .palya-karta {
+            display: inline-block;
+            margin: 10px;
+            padding: 20px;
+            border: 3px solid transparent;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .palya-karta:hover {
+            transform: scale(1.05);
+            border-color: #4CAF50;
+        }
+
+        .palya-karta.kivalasztott {
+            border-color: #4CAF50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .status {
+            text-align: center;
+            padding: 5px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 12px;
+        }
+
+        .connected {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4CAF50;
+        }
+
+        #jatekVegePanel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            display: none;
+            z-index: 1000;
+            border: 3px solid;
+        }
+
+            #jatekVegePanel.gyozelem {
+                border-color: #4CAF50;
+            }
+
+            #jatekVegePanel.vereseg {
+                border-color: #f44336;
+            }
+
+            #jatekVegePanel h1 {
+                font-size: 48px;
+                margin: 0 0 20px 0;
+            }
+
+        #ujJatekGomb {
+            font-size: 18px;
+            padding: 15px 40px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="jatekVaszon"></canvas>
+    <canvas id="minimap"></canvas>
+    <div id="felhasznaloiFelulet">
+        <h3 style="margin:0 0 10px 0;">🎮 3D Tank Játék</h3>
+        <div>Játékos ID: <span id="jatekosId">-</span></div>
+        <div>Pozíció: <span id="pozicio">-</span></div>
+        <div>HP: <span id="eletero">10</span></div>
+        <div id="aktivPowerupok"></div>
+    </div>
+    <div id="iranyitasok">
+        <strong>Irányítás:</strong><br>⬆️ W vagy ↑ - Előre<br>⬇️ S vagy ↓ - Hátra<br>⬅️ A vagy ← - Balra fordulás<br>➡️ D vagy → - Jobbra fordulás<br>🎯 SPACE - Lövés<br>👁️ 1-9 - Spectator váltás (halál után)
+    </div>
+    <div id="powerupInfo">
+        <h4 style="margin:0 0 10px 0;">💎 Aktív Power-upok</h4>
+        <div id="powerupLista">Nincs aktív power-up</div>
+    </div>
+    <div id="spectatorPanel">
+        <h2>👻 Spectator Mód</h2>
+        <p>Használd az 1-9 számokat a játékosok közötti váltáshoz</p>
+        <p id="spectatorInfo">Figyelett játékos: -</p>
+        <button onclick="respawnJatekos()">🔄 Respawn</button>
+        <button onclick="ujJatekInditasa()" style="background: #f44336; margin-top: 10px;">🚪 Új Játék</button>
+    </div>
+    <div id="palyaValasztoPanel">
+        <h1>🗺️ Válassz Pályát!</h1>
+        <p>Kattints a kívánt környezetre:</p>
+        <div id="palyaKartyak">
+            <div class="palya-karta" data-palya="alap" style="background: linear-gradient(135deg, #228B22, #32CD32);">
+                <h3>🌱 Klasszikus</h3>
+                <p>Zöld mező</p>
+            </div>
+            <div class="palya-karta" data-palya="sivatag" style="background: linear-gradient(135deg, #F4A460, #DEB887);">
+                <h3>🏜️ Sivatag</h3>
+                <p>Homokos terep</p>
+            </div>
+            <div class="palya-karta" data-palya="teli" style="background: linear-gradient(135deg, #E6F3FF, #B0E0E6);">
+                <h3>❄️ Téli</h3>
+                <p>Havas táj</p>
+            </div>
+            <div class="palya-karta" data-palya="erdo" style="background: linear-gradient(135deg, #2F4F2F, #006400);">
+                <h3>🌲 Erdő</h3>
+                <p>Sűrű növényzet</p>
+            </div>
+            <div class="palya-karta" data-palya="varosi" style="background: linear-gradient(135deg, #696969, #2F4F4F);">
+                <h3>🏙️ Városi</h3>
+                <p>Beton környezet</p>
+            </div>
+        </div>
+        <button onclick="palyaValasztasOK()" style="font-size: 18px; padding: 15px 40px; margin-top: 30px;">✅ Játék Indítása</button>
+    </div>
+    <div id="szerverPanel">
+        <h3 style="margin:0 0 10px 0; text-align: center;">🌐 Online Játék</h3>
+        <div class="status connected">● Csatlakozva</div>
+        <div style="text-align: center; margin: 10px 0;"><strong>Szoba kód:</strong></div>
+        <div id="szerverKod">-</div>
+        <div class="input-group">
+            <label>Csatlakozás szobához:</label>
+            <input type="text" id="kodInput" placeholder="0000" maxlength="4">
+            <button onclick="szerverCsatlakozas()">Csatlakozás</button>
+        </div>
+        <div id="jatekosLista">
+            <strong>👥 Játékosok (0):</strong>
+            <div id="jatekosok" style="margin-top: 10px;"></div>
+        </div>
+    </div>
+    <div id="jatekVegePanel">
+        <h1 id="jatekVegeUzenet"></h1>
+        <p id="jatekVegeReszletek" style="font-size: 20px; margin: 10px 0;"></p>
+        <button id="ujJatekGomb" onclick="ujJatekInditasa()">🔄 Új Játék</button>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyCFWPJUOP4RJ7eWT5QbvNRbv78RDozoI1g", authDomain: "tank-6d3e2.firebaseapp.com", databaseURL: "https://tank-6d3e2-default-rtdb.firebaseio.com", projectId: "tank-6d3e2", storageBucket: "tank-6d3e2.firebasestorage.app", messagingSenderId: "578260405787", appId: "1:578260405787:web:c182e69e082e717f34f2be" };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const jatekosSzinek = [0xff3333, 0x33ff33, 0x3333ff, 0xffff33, 0xff33ff, 0x33ffff, 0xff9933, 0x9933ff];
+        const jatekAllapot = { jatekosok: {}, lovedekek: [], akadalyok: [], powerupok: [], sajatId: 'p_' + Math.random().toString(36).substr(2, 9), szerverKod: null, csatlakozottSzerver: null, firebaseRefs: {}, jatekVege: false, maxElet: 10, spectatorMod: false, spectatorCel: null, aktivPowerupok: {}, kivalasztottPalya: 'alap' };
+        const palyaTemak = {
+            alap: { hatter: 0x87ceeb, fold: 0x228B22, kodfog: 0x87ceeb, akadaly: 0x8B4513, nev: 'Klasszikus' },
+            sivatag: { hatter: 0xDEB887, fold: 0xF4A460, kodfog: 0xDEB887, akadaly: 0xCD853F, nev: 'Sivatag' },
+            teli: { hatter: 0xE6F3FF, fold: 0xFFFFFF, kodfog: 0xE6F3FF, akadaly: 0x4682B4, nev: 'Téli' },
+            erdo: { hatter: 0x2F4F2F, fold: 0x006400, kodfog: 0x2F4F2F, akadaly: 0x654321, nev: 'Erdő' },
+            varosi: { hatter: 0x696969, fold: 0x808080, kodfog: 0x696969, akadaly: 0x2F4F4F, nev: 'Városi' }
+        };
+        const hangok = { context: null, lovesHang: null, talaltHang: null, robbanasHang: null, mozgasHang: null };
+        const powerupTipusok = {
+            sebesseg: { szin: 0x00ff00, nev: '⚡ Gyorsaság', ido: 5000, ikon: '⚡' },
+            duplaLoves: { szin: 0xff6600, nev: '🔥 Dupla Lövés', ido: 8000, ikon: '🔥' },
+            sebzes: { szin: 0xff0000, nev: '💥 Nagy Sebzés', ido: 6000, ikon: '💥' },
+            pajzs: { szin: 0x0066ff, nev: '🛡️ Pajzs', ido: 10000, ikon: '🛡️' },
+            gyogyulas: { szin: 0xff66ff, nev: '❤️ Gyógyulás', ido: 0, ikon: '❤️' }
+        };
+        const szinhely = new THREE.Scene();
+        const kamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.2, 1000);
+        const renderelo = new THREE.WebGLRenderer({ canvas: document.getElementById('jatekVaszon'), antialias: true });
+        const minimapCanvas = document.getElementById('minimap');
+        const minimapCtx = minimapCanvas.getContext('2d');
+        minimapCanvas.width = 200;
+        minimapCanvas.height = 200;
+        renderelo.setSize(window.innerWidth, window.innerHeight);
+        renderelo.shadowMap.enabled = true;
+        szinhely.add(new THREE.AmbientLight(0xffffff, 0.6));
+        const f = new THREE.DirectionalLight(0xffffff, 0.8);
+        f.position.set(50, 50, 50);
+        f.castShadow = true;
+        szinhely.add(f);
+        let fold = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshLambertMaterial({ color: 0x228B22 }));
+        fold.rotation.x = -Math.PI / 2;
+        fold.receiveShadow = true;
+        szinhely.add(fold);
+        const r = new THREE.GridHelper(200, 40, 0, 0);
+        r.material.opacity = 0.2;
+        r.material.transparent = true;
+        szinhely.add(r);
+        function akadalyokLetrehozasa() {
+            const tema = palyaTemak[jatekAllapot.kivalasztottPalya];
+            const a = new THREE.MeshLambertMaterial({ color: tema.akadaly });
+            for (let i = 0; i < 30; i++) {
+                const m = 3 + Math.random() * 4, h = 3 + Math.random() * 5, g = new THREE.BoxGeometry(m, h, m), x = (Math.random() - 0.5) * 160, z = (Math.random() - 0.5) * 160, o = new THREE.Mesh(g, a);
+                o.position.set(x, h / 2, z);
+                o.castShadow = true;
+                szinhely.add(o);
+                jatekAllapot.akadalyok.push({ x: x, z: z, meret: m, halozat: o });
+            }
+        }
+        function palyaBeallitas() {
+            const tema = palyaTemak[jatekAllapot.kivalasztottPalya];
+            szinhely.background = new THREE.Color(tema.hatter);
+            szinhely.fog = new THREE.Fog(tema.kodfog, 50, 200);
+            fold.material.color.setHex(tema.fold);
+        }
+        palyaValasztoMegjelenites();
+        function utkozesEllenorzes(x, z, s = 2) {
+            for (let a of jatekAllapot.akadalyok) {
+                const d = Math.sqrt(Math.pow(x - a.x, 2) + Math.pow(z - a.z, 2));
+                if (d < (s + a.meret / 2)) return true;
+            }
+            return false;
+        }
+        function tankLetrehozasa(c) {
+            const t = new THREE.Group(), a = new THREE.MeshLambertMaterial({ color: c }), b = new THREE.Mesh(new THREE.BoxGeometry(3, 1.5, 4), a);
+            b.castShadow = true;
+            t.add(b);
+            const to = new THREE.Mesh(new THREE.BoxGeometry(2, 1, 2), a);
+            to.position.y = 1.25;
+            to.castShadow = true;
+            t.add(to);
+            const ag = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 3), new THREE.MeshLambertMaterial({ color: 0x333333 }));
+            ag.rotation.x = Math.PI / 2;
+            ag.position.set(0, 1.25, 1.5);
+            ag.castShadow = true;
+            t.add(ag);
+            return t;
+        }
+        function hangokInicializalasa() {
+            try {
+                hangok.context = new (window.AudioContext || window.webkitAudioContext)();
+                hangok.lovesHang = hangGeneralas([440, 880, 440], [0.1, 0.1, 0.1]);
+                hangok.talaltHang = hangGeneralas([200, 150, 100], [0.1, 0.1, 0.2]);
+                hangok.robbanasHang = hangGeneralas([80, 60, 40], [0.2, 0.3, 0.5]);
+            } catch(e) { console.log('Audio nem támogatott'); }
+        }
+        function hangGeneralas(frekvenciak, idotartamok) {
+            if (!hangok.context) return null;
+            const buffer = hangok.context.createBuffer(1, hangok.context.sampleRate * 0.5, hangok.context.sampleRate);
+            const data = buffer.getChannelData(0);
+            let offset = 0;
+            frekvenciak.forEach((freq, i) => {
+                const samples = hangok.context.sampleRate * idotartamok[i];
+                for (let j = 0; j < samples; j++) {
+                    data[offset + j] = Math.sin(2 * Math.PI * freq * j / hangok.context.sampleRate) * 0.3 * Math.exp(-j / samples * 3);
+                }
+                offset += samples;
+            });
+            return buffer;
+        }
+        function hangLejatszas(buffer) {
+            if (!hangok.context || !buffer) return;
+            const source = hangok.context.createBufferSource();
+            source.buffer = buffer;
+            source.connect(hangok.context.destination);
+            source.start();
+        }
+        function powerupokLetrehozasa() {
+            const tipusok = Object.keys(powerupTipusok);
+            for (let i = 0; i < 8; i++) {
+                const tipus = tipusok[Math.floor(Math.random() * tipusok.length)];
+                let x, z;
+                do { x = (Math.random() - 0.5) * 160; z = (Math.random() - 0.5) * 160; } while (utkozesEllenorzes(x, z, 3));
+                const geometry = new THREE.CylinderGeometry(1.5, 1.5, 0.5, 8);
+                const material = new THREE.MeshLambertMaterial({ color: powerupTipusok[tipus].szin, emissive: powerupTipusok[tipus].szin, emissiveIntensity: 0.3 });
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.position.set(x, 0.5, z);
+                mesh.castShadow = true;
+                szinhely.add(mesh);
+                jatekAllapot.powerupok.push({ tipus: tipus, x: x, z: z, halozat: mesh, forgatas: 0 });
+            }
+        }
+        function powerupFelvetel(jatekos, powerup) {
+            const tipus = powerup.tipus;
+            szinhely.remove(powerup.halozat);
+            jatekAllapot.powerupok = jatekAllapot.powerupok.filter(p => p !== powerup);
+            if (tipus === 'gyogyulas') {
+                jatekos.elet = Math.min(jatekAllapot.maxElet, jatekos.elet + 3);
+            } else {
+                jatekAllapot.aktivPowerupok[tipus] = { ido: powerupTipusok[tipus].ido, inditas: Date.now() };
+            }
+            powerupokFrissitese();
+        }
+        function palyaValasztoMegjelenites() {
+            document.getElementById('palyaValasztoPanel').style.display = 'block';
+            document.querySelectorAll('.palya-karta').forEach(karta => {
+                karta.addEventListener('click', () => {
+                    document.querySelectorAll('.palya-karta').forEach(k => k.classList.remove('kivalasztott'));
+                    karta.classList.add('kivalasztott');
+                    jatekAllapot.kivalasztottPalya = karta.dataset.palya;
+                });
+            });
+        }
+        function palyaValasztasOK() {
+            document.getElementById('palyaValasztoPanel').style.display = 'none';
+            document.getElementById('minimap').style.display = 'block';
+            palyaBeallitas();
+            akadalyokLetrehozasa();
+            hangokInicializalasa();
+            powerupokLetrehozasa();
+            szerverKodGeneralas();
+            jatekosLetrehozasa();
+        }
+        function respawnJatekos() {
+            document.getElementById('spectatorPanel').style.display = 'none';
+            jatekAllapot.spectatorMod = false;
+            jatekAllapot.spectatorCel = null;
+            jatekAllapot.aktivPowerupok = {};
+            if (jatekAllapot.jatekosok[jatekAllapot.sajatId]) {
+                szinhely.remove(jatekAllapot.jatekosok[jatekAllapot.sajatId].halozat);
+                delete jatekAllapot.jatekosok[jatekAllapot.sajatId];
+            }
+            jatekAllapot.sajatId = 'p_' + Math.random().toString(36).substr(2, 9);
+            jatekosLetrehozasa();
+        }
+        function powerupokFrissitese() {
+            Object.keys(jatekAllapot.aktivPowerupok).forEach(tipus => {
+                const powerup = jatekAllapot.aktivPowerupok[tipus];
+                if (Date.now() - powerup.inditas > powerup.ido) {
+                    delete jatekAllapot.aktivPowerupok[tipus];
+                }
+            });
+            const lista = document.getElementById('powerupLista');
+            const aktiv = Object.keys(jatekAllapot.aktivPowerupok);
+            if (aktiv.length === 0) {
+                lista.innerHTML = 'Nincs aktív power-up';
+            } else {
+                lista.innerHTML = aktiv.map(tipus => {
+                    const maradek = Math.ceil((jatekAllapot.aktivPowerupok[tipus].ido - (Date.now() - jatekAllapot.aktivPowerupok[tipus].inditas)) / 1000);
+                    return `<div>${powerupTipusok[tipus].ikon} ${powerupTipusok[tipus].nev}: ${maradek}s</div>`;
+                }).join('');
+            }
+        }
+        function szerverKodGeneralas() {
+            const k = Math.floor(1000 + Math.random() * 9000).toString();
+            jatekAllapot.szerverKod = k;
+            jatekAllapot.csatlakozottSzerver = k;
+            document.getElementById('szerverKod').textContent = k;
+            // Pálya információ tárolása a szobában
+            database.ref('szobak/' + k + '/palya').set(jatekAllapot.kivalasztottPalya);
+            const l = database.ref('szobak/' + k + '/lovedekek');
+            l.on('value', s => {
+                const d = s.val() || {};
+                jatekAllapot.lovedekek.forEach(lv => { if (!lv.sajat && !d[lv.id]) szinhely.remove(lv.halozat); });
+                jatekAllapot.lovedekek = jatekAllapot.lovedekek.filter(lv => lv.sajat || d[lv.id]);
+                Object.keys(d).forEach(id => {
+                    const da = d[id];
+                    if (da.tulajdonos === jatekAllapot.sajatId) return;
+                    if (!jatekAllapot.lovedekek.find(lv => lv.id === id)) {
+                        const lo = new THREE.Mesh(new THREE.SphereGeometry(0.3), new THREE.MeshBasicMaterial({ color: 0xffff00 }));
+                        lo.position.set(da.x, 1, da.z);
+                        szinhely.add(lo);
+                        jatekAllapot.lovedekek.push({ id: id, halozat: lo, iranyX: da.iranyX, iranyZ: da.iranyZ, elettartam: da.elettartam, tulajdonos: da.tulajdonos, sajat: false });
+                    }
+                });
+            });
+            jatekAllapot.firebaseRefs.lovedekek = l;
+            csatlakozasSzobahoz(k);
+        }
+        function csatlakozasSzobahoz(k) {
+            const sz = database.ref('szobak/' + k + '/jatekosok');
+            sz.on('value', s => {
+                const jd = s.val() || {};
+                Object.keys(jatekAllapot.jatekosok).forEach(id => {
+                    if (id !== jatekAllapot.sajatId && !jd[id]) {
+                        if (jatekAllapot.jatekosok[id].halozat) szinhely.remove(jatekAllapot.jatekosok[id].halozat);
+                        delete jatekAllapot.jatekosok[id];
+                    }
+                });
+                Object.keys(jd).forEach(id => {
+                    if (id === jatekAllapot.sajatId) return;
+                    const d = jd[id];
+                    if (!jatekAllapot.jatekosok[id]) {
+                        jatekAllapot.jatekosok[id] = { halozat: tankLetrehozasa(d.szin), x: d.x, z: d.z, forgatas: d.forgatas, szin: d.szin, elet: d.elet };
+                        szinhely.add(jatekAllapot.jatekosok[id].halozat);
+                    } else {
+                        jatekAllapot.jatekosok[id].x = d.x;
+                        jatekAllapot.jatekosok[id].z = d.z;
+                        jatekAllapot.jatekosok[id].forgatas = d.forgatas;
+                        jatekAllapot.jatekosok[id].elet = d.elet;
+                        jatekAllapot.jatekosok[id].halozat.position.x = d.x;
+                        jatekAllapot.jatekosok[id].halozat.position.z = d.z;
+                        jatekAllapot.jatekosok[id].halozat.rotation.y = d.forgatas;
+                    }
+                });
+            });
+            jatekAllapot.firebaseRefs.szoba = sz;
+        }
+        function szerverCsatlakozas() {
+            const k = document.getElementById('kodInput').value.trim();
+            if (k.length !== 4 || !/^\d+$/.test(k)) { alert('Kérlek adj meg egy 4 jegyű számot!'); return; }
+            // Először ellenőrizzük, hogy létezik-e a szoba és lekérjük a pálya információt
+            database.ref('szobak/' + k).once('value', snapshot => {
+                const szobaAdatok = snapshot.val();
+                if (!szobaAdatok) {
+                    alert('A szoba nem létezik vagy már bezárult!');
+                    return;
+                }
+                // Beállítjuk a szoba pályáját
+                if (szobaAdatok.palya) {
+                    jatekAllapot.kivalasztottPalya = szobaAdatok.palya;
+                }
+                // Elrejtjük a pályaválasztó panelt és beállítjuk a környezetet
+                document.getElementById('palyaValasztoPanel').style.display = 'none';
+                document.getElementById('minimap').style.display = 'block';
+                palyaBeallitas();
+                akadalyokLetrehozasa();
+                hangokInicializalasa();
+                powerupokLetrehozasa();
+                
+                jatekAllapot.csatlakozottSzerver = k;
+                jatekAllapot.szerverKod = k;
+                document.getElementById('szerverKod').textContent = k;
+                if (jatekAllapot.firebaseRefs.sajatJatekos) jatekAllapot.firebaseRefs.sajatJatekos.off();
+                const l = database.ref('szobak/' + k + '/lovedekek');
+                l.on('value', s => {
+                    const d = s.val() || {};
+                    jatekAllapot.lovedekek.forEach(lv => { if (!lv.sajat && !d[lv.id]) szinhely.remove(lv.halozat); });
+                    jatekAllapot.lovedekek = jatekAllapot.lovedekek.filter(lv => lv.sajat || d[lv.id]);
+                    Object.keys(d).forEach(id => {
+                        const da = d[id];
+                        if (da.tulajdonos === jatekAllapot.sajatId) return;
+                        if (!jatekAllapot.lovedekek.find(lv => lv.id === id)) {
+                            const lo = new THREE.Mesh(new THREE.SphereGeometry(0.3), new THREE.MeshBasicMaterial({ color: 0xffff00 }));
+                            lo.position.set(da.x, 1, da.z);
+                            szinhely.add(lo);
+                            jatekAllapot.lovedekek.push({ id: id, halozat: lo, iranyX: da.iranyX, iranyZ: da.iranyZ, elettartam: da.elettartam, tulajdonos: da.tulajdonos, sajat: false });
+                        }
+                    });
+                });
+                jatekAllapot.firebaseRefs.lovedekek = l;
+                csatlakozasSzobahoz(k);
+                jatekosLetrehozasa();
+            });
+        }
+        function jatekosLetrehozasa() {
+            const c = jatekosSzinek[Math.floor(Math.random() * jatekosSzinek.length)];
+            let x, z;
+            do { x = (Math.random() - 0.5) * 80; z = (Math.random() - 0.5) * 80; } while (utkozesEllenorzes(x, z));
+            jatekAllapot.jatekosok[jatekAllapot.sajatId] = { halozat: tankLetrehozasa(c), x: x, z: z, forgatas: 0, sebesseg: 0, szin: c, elet: jatekAllapot.maxElet };
+            szinhely.add(jatekAllapot.jatekosok[jatekAllapot.sajatId].halozat);
+            document.getElementById('jatekosId').textContent = jatekAllapot.sajatId.substr(0, 6);
+            const jr = database.ref('szobak/' + jatekAllapot.csatlakozottSzerver + '/jatekosok/' + jatekAllapot.sajatId);
+            jatekAllapot.firebaseRefs.sajatJatekos = jr;
+            jr.set({ x: x, z: z, forgatas: 0, szin: c, elet: jatekAllapot.maxElet });
+            jr.onDisconnect().remove();
+        }
+        function firebaseFeltoltes() {
+            if (!jatekAllapot.csatlakozottSzerver || !jatekAllapot.firebaseRefs.sajatJatekos) return;
+            const j = jatekAllapot.jatekosok[jatekAllapot.sajatId];
+            if (!j) return;
+            jatekAllapot.firebaseRefs.sajatJatekos.update({ x: j.x, z: j.z, forgatas: j.forgatas, elet: j.elet });
+        }
+        const billentyuk = {};
+        window.addEventListener('keydown', e => {
+            billentyuk[e.key.toLowerCase()] = true;
+            if (jatekAllapot.spectatorMod && e.key >= '1' && e.key <= '9') {
+                spectatorValt(parseInt(e.key) - 1);
+            }
+        });
+        window.addEventListener('keyup', e => billentyuk[e.key.toLowerCase()] = false);
+        let utolsoLoves = 0;
+        function lovedekLetrehozasa(x, z, fo) {
+            hangLejatszas(hangok.lovesHang);
+            const ix = Math.sin(fo), iz = Math.cos(fo);
+            const dupla = jatekAllapot.aktivPowerupok.duplaLoves;
+            const lovesek = dupla ? [{szog: -0.2}, {szog: 0.2}] : [{szog: 0}];
+            lovesek.forEach(l => {
+                const lo = new THREE.Mesh(new THREE.SphereGeometry(0.3), new THREE.MeshBasicMaterial({ color: 0xffff00 }));
+                const lx = Math.sin(fo + l.szog), lz = Math.cos(fo + l.szog);
+                lo.position.set(x + ix * 2, 1, z + iz * 2);
+                szinhely.add(lo);
+                const lid = 'l_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                jatekAllapot.lovedekek.push({ id: lid, halozat: lo, iranyX: lx, iranyZ: lz, elettartam: 100, tulajdonos: jatekAllapot.sajatId, sajat: true, erosLoves: !!jatekAllapot.aktivPowerupok.sebzes });
+                if (jatekAllapot.csatlakozottSzerver) {
+                    database.ref('szobak/' + jatekAllapot.csatlakozottSzerver + '/lovedekek/' + lid).set({ x: lo.position.x, z: lo.position.z, iranyX: lx, iranyZ: lz, elettartam: 100, tulajdonos: jatekAllapot.sajatId, erosLoves: !!jatekAllapot.aktivPowerupok.sebzes });
+                }
+            });
+        }
+        function spectatorValt(index) {
+            const jatekosok = Object.keys(jatekAllapot.jatekosok).filter(id => id !== jatekAllapot.sajatId && jatekAllapot.jatekosok[id].elet > 0);
+            if (index < jatekosok.length) {
+                jatekAllapot.spectatorCel = jatekosok[index];
+                document.getElementById('spectatorInfo').textContent = 'Figyelett játékos: ' + jatekosok[index].substr(0, 6);
+            }
+        }
+        function minimapRajzolas() {
+            minimapCtx.clearRect(0, 0, 200, 200);
+            const tema = palyaTemak[jatekAllapot.kivalasztottPalya];
+            minimapCtx.fillStyle = '#' + tema.fold.toString(16).padStart(6, '0');
+            minimapCtx.fillRect(0, 0, 200, 200);
+            minimapCtx.strokeStyle = '#fff';
+            minimapCtx.strokeRect(0, 0, 200, 200);
+            jatekAllapot.akadalyok.forEach(a => {
+                const x = (a.x + 100) * 200 / 200;
+                const z = (a.z + 100) * 200 / 200;
+                minimapCtx.fillStyle = '#' + tema.akadaly.toString(16).padStart(6, '0');
+                minimapCtx.fillRect(x-2, z-2, 4, 4);
+            });
+            jatekAllapot.powerupok.forEach(p => {
+                const x = (p.x + 100) * 200 / 200;
+                const z = (p.z + 100) * 200 / 200;
+                minimapCtx.fillStyle = '#' + p.halozat.material.color.getHexString();
+                minimapCtx.beginPath();
+                minimapCtx.arc(x, z, 3, 0, 2 * Math.PI);
+                minimapCtx.fill();
+            });
+            Object.keys(jatekAllapot.jatekosok).forEach(id => {
+                const j = jatekAllapot.jatekosok[id];
+                if (j.elet <= 0) return;
+                const x = (j.x + 100) * 200 / 200;
+                const z = (j.z + 100) * 200 / 200;
+                minimapCtx.fillStyle = id === jatekAllapot.sajatId ? '#fff' : '#' + j.szin.toString(16).padStart(6, '0');
+                minimapCtx.beginPath();
+                minimapCtx.arc(x, z, id === jatekAllapot.sajatId ? 4 : 3, 0, 2 * Math.PI);
+                minimapCtx.fill();
+                const dx = Math.sin(j.forgatas) * 6;
+                const dz = Math.cos(j.forgatas) * 6;
+                minimapCtx.strokeStyle = minimapCtx.fillStyle;
+                minimapCtx.lineWidth = 2;
+                minimapCtx.beginPath();
+                minimapCtx.moveTo(x, z);
+                minimapCtx.lineTo(x + dx, z + dz);
+                minimapCtx.stroke();
+            });
+        }
+        function animacio() {
+            requestAnimationFrame(animacio);
+            const j = jatekAllapot.jatekosok[jatekAllapot.sajatId];
+            if (jatekAllapot.jatekVege) { renderelo.render(szinhely, kamera); return; }
+            if (jatekAllapot.spectatorMod) {
+                spectatorKamera();
+                renderelo.render(szinhely, kamera);
+                minimapRajzolas();
+                return;
+            }
+            if (!j) return;
+            if (j.elet <= 0) {
+                jatekAllapot.spectatorMod = true;
+                document.getElementById('spectatorPanel').style.display = 'block';
+                spectatorValt(0);
+                return;
+            }
+            let ux = j.x, uz = j.z;
+            const sebessegMultiplo = jatekAllapot.aktivPowerupok.sebesseg ? 1.5 : 1;
+            if (billentyuk['w'] || billentyuk['arrowup']) j.sebesseg = 0.3 * sebessegMultiplo;
+            else if (billentyuk['s'] || billentyuk['arrowdown']) j.sebesseg = -0.2 * sebessegMultiplo;
+            else j.sebesseg *= 0.9;
+            if (billentyuk['a'] || billentyuk['arrowleft']) j.forgatas += 0.05;
+            if (billentyuk['d'] || billentyuk['arrowright']) j.forgatas -= 0.05;
+            if (billentyuk[' '] && Date.now() - utolsoLoves > 500) { lovedekLetrehozasa(j.x, j.z, j.forgatas); utolsoLoves = Date.now(); }
+            ux += Math.sin(j.forgatas) * j.sebesseg;
+            uz += Math.cos(j.forgatas) * j.sebesseg;
+            ux = Math.max(-95, Math.min(95, ux));
+            uz = Math.max(-95, Math.min(95, uz));
+            if (!utkozesEllenorzes(ux, uz)) { j.x = ux; j.z = uz; }
+            jatekAllapot.powerupok.forEach((p, i) => {
+                p.forgatas += 0.02;
+                p.halozat.rotation.y = p.forgatas;
+                p.halozat.position.y = 0.5 + Math.sin(Date.now() * 0.003 + i) * 0.2;
+                const tavolsag = Math.sqrt(Math.pow(j.x - p.x, 2) + Math.pow(j.z - p.z, 2));
+                if (tavolsag < 2.5) powerupFelvetel(j, p);
+            });
+            j.halozat.position.x = j.x;
+            j.halozat.position.z = j.z;
+            j.halozat.rotation.y = j.forgatas;
+            if (jatekAllapot.aktivPowerupok.pajzs) {
+                j.halozat.children[0].material.emissive.setHex(0x0066ff);
+                j.halozat.children[0].material.emissiveIntensity = 0.3;
+            } else {
+                j.halozat.children[0].material.emissive.setHex(0x000000);
+                j.halozat.children[0].material.emissiveIntensity = 0;
+            }
+            for (let i = jatekAllapot.lovedekek.length - 1; i >= 0; i--) {
+                const lv = jatekAllapot.lovedekek[i];
+                lv.halozat.position.x += lv.iranyX * 0.8;
+                lv.halozat.position.z += lv.iranyZ * 0.8;
+                lv.elettartam--;
+                let tal = false;
+                Object.keys(jatekAllapot.jatekosok).forEach(id => {
+                    if (id === lv.tulajdonos) return;
+                    const ct = jatekAllapot.jatekosok[id];
+                    if (!ct || !ct.halozat) return;
+                    const tv = Math.sqrt(Math.pow(lv.halozat.position.x - ct.x, 2) + Math.pow(lv.halozat.position.z - ct.z, 2));
+                    if (tv < 2) {
+                        tal = true;
+                        hangLejatszas(hangok.talaltHang);
+                        if (lv.tulajdonos === jatekAllapot.sajatId && id !== jatekAllapot.sajatId) {
+                            const sebzes = lv.erosLoves ? 2 : 1;
+                            ct.elet -= sebzes;
+                            if (jatekAllapot.csatlakozottSzerver) database.ref('szobak/' + jatekAllapot.csatlakozottSzerver + '/jatekosok/' + id + '/elet').set(ct.elet);
+                        }
+                        if (id === jatekAllapot.sajatId) {
+                            if (!jatekAllapot.aktivPowerupok.pajzs) {
+                                const sebzes = lv.erosLoves ? 2 : 1;
+                                j.elet -= sebzes;
+                            }
+                        }
+                    }
+                });
+                if (tal || lv.elettartam <= 0 || Math.abs(lv.halozat.position.x) > 100 || Math.abs(lv.halozat.position.z) > 100 || utkozesEllenorzes(lv.halozat.position.x, lv.halozat.position.z, 0.5)) {
+                    szinhely.remove(lv.halozat);
+                    if (lv.sajat && jatekAllapot.csatlakozottSzerver) database.ref('szobak/' + jatekAllapot.csatlakozottSzerver + '/lovedekek/' + lv.id).remove();
+                    jatekAllapot.lovedekek.splice(i, 1);
+                }
+            }
+            ellenorizGyozelmet();
+            powerupokFrissitese();
+            kamera.position.x = j.x - Math.sin(j.forgatas) * 15;
+            kamera.position.y = 8;
+            kamera.position.z = j.z - Math.cos(j.forgatas) * 15;
+            kamera.lookAt(j.x, 0, j.z);
+            document.getElementById('pozicio').textContent = 'X: ' + j.x.toFixed(1) + ', Z: ' + j.z.toFixed(1);
+            document.getElementById('eletero').textContent = j.elet;
+            jatekosListaFrissitese();
+            renderelo.render(szinhely, kamera);
+            minimapRajzolas();
+        }
+        function spectatorKamera() {
+            if (jatekAllapot.spectatorCel && jatekAllapot.jatekosok[jatekAllapot.spectatorCel]) {
+                const cel = jatekAllapot.jatekosok[jatekAllapot.spectatorCel];
+                kamera.position.x = cel.x - Math.sin(cel.forgatas) * 15;
+                kamera.position.y = 8;
+                kamera.position.z = cel.z - Math.cos(cel.forgatas) * 15;
+                kamera.lookAt(cel.x, 0, cel.z);
+            }
+        }
+        function ellenorizGyozelmet() {
+            if (jatekAllapot.jatekVege) return;
+            const j = jatekAllapot.jatekosok[jatekAllapot.sajatId];
+            if (!j) return;
+            let elo = 0;
+            Object.keys(jatekAllapot.jatekosok).forEach(id => { if (jatekAllapot.jatekosok[id].elet > 0) elo++; });
+            if (Object.keys(jatekAllapot.jatekosok).length >= 2 && j.elet > 0 && elo === 1) jatekVegeKijelzes(true);
+        }
+        function jatekVegeKijelzes(gy) {
+            jatekAllapot.jatekVege = true;
+            const p = document.getElementById('jatekVegePanel'), u = document.getElementById('jatekVegeUzenet'), re = document.getElementById('jatekVegeReszletek');
+            if (gy) { p.className = 'gyozelem'; u.textContent = '🏆 GYŐZTÉL! 🏆'; re.textContent = 'Gratulálunk! Legyőzted az összes ellenséget!'; }
+            else { p.className = 'vereseg'; u.textContent = '💀 VESZTETTÉL! 💀'; re.textContent = 'Az életerőd elfogyott. Próbáld újra!'; }
+            p.style.display = 'block';
+        }
+        function ujJatekInditasa() {
+            document.getElementById('jatekVegePanel').style.display = 'none';
+            document.getElementById('spectatorPanel').style.display = 'none';
+            document.getElementById('minimap').style.display = 'none';
+            jatekAllapot.jatekVege = false;
+            jatekAllapot.spectatorMod = false;
+            jatekAllapot.spectatorCel = null;
+            jatekAllapot.aktivPowerupok = {};
+            if (jatekAllapot.firebaseRefs.sajatJatekos) { jatekAllapot.firebaseRefs.sajatJatekos.remove(); jatekAllapot.firebaseRefs.sajatJatekos.off(); }
+            if (jatekAllapot.firebaseRefs.szoba) jatekAllapot.firebaseRefs.szoba.off();
+            if (jatekAllapot.firebaseRefs.lovedekek) jatekAllapot.firebaseRefs.lovedekek.off();
+            Object.keys(jatekAllapot.jatekosok).forEach(id => { if (jatekAllapot.jatekosok[id].halozat) szinhely.remove(jatekAllapot.jatekosok[id].halozat); });
+            jatekAllapot.lovedekek.forEach(l => szinhely.remove(l.halozat));
+            jatekAllapot.powerupok.forEach(p => szinhely.remove(p.halozat));
+            jatekAllapot.akadalyok.forEach(a => szinhely.remove(a.halozat));
+            jatekAllapot.jatekosok = {};
+            jatekAllapot.lovedekek = [];
+            jatekAllapot.powerupok = [];
+            jatekAllapot.akadalyok = [];
+            jatekAllapot.sajatId = 'p_' + Math.random().toString(36).substr(2, 9);
+            palyaValasztoMegjelenites();
+        }
+        function jatekosListaFrissitese() {
+            const jl = document.getElementById('jatekosok');
+            let h = '', sz = 0;
+            Object.keys(jatekAllapot.jatekosok).forEach(id => {
+                const j = jatekAllapot.jatekosok[id], sh = '#' + j.szin.toString(16).padStart(6, '0'), en = id === jatekAllapot.sajatId;
+                sz++;
+                h += '<div class="jatekos-elem" style="background-color:' + sh + '33;border-left:3px solid ' + sh + '">' + (en ? '👤 TE' : '🎮 Játékos') + ' - HP: ' + j.elet + '</div>';
+            });
+            jl.innerHTML = h || '<div style="opacity:0.5">Nincs más játékos</div>';
+            document.querySelector('#jatekosLista strong').textContent = '👥 Játékosok (' + sz + '):';
+        }
+        window.addEventListener('resize', () => { kamera.aspect = window.innerWidth / window.innerHeight; kamera.updateProjectionMatrix(); renderelo.setSize(window.innerWidth, window.innerHeight); });
+        setInterval(firebaseFeltoltes, 100);
+        animacio();
+    </script>
+</body>
+</html>

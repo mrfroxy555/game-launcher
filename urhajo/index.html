@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaktikus Űrhajó Játék</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- UI Overlay -->
+        <div id="gameUI">
+            <div id="topBar">
+                <div id="healthBar">
+                    <div class="bar-label">ÉLET</div>
+                    <div class="bar-container">
+                        <div id="healthFill" class="bar-fill"></div>
+                    </div>
+                </div>
+                <div id="levelInfo">
+                    <div class="info-label">SZINT</div>
+                    <div id="currentLevel" class="info-value">1</div>
+                </div>
+                <div id="scoreInfo">
+                    <div class="info-label">PONT</div>
+                    <div id="currentScore" class="info-value">0</div>
+                </div>
+                <div id="missedInfo">
+                    <div class="info-label">KIHAGYVA</div>
+                    <div id="missedCount" class="info-value">0</div>
+                </div>
+            </div>
+            
+            <!-- Skip Level Button -->
+            <div id="skipLevelContainer">
+                <button id="skipLevelButton" class="skip-button">SZINT TELJESÍTÉSE</button>
+            </div>
+        </div>
+        
+        <!-- Start Screen -->
+        <div id="startScreen" class="screen">
+            <div class="screen-content">
+                <h1 class="game-title">GALAKTIKUS HADSEREG</h1>
+                <p class="game-subtitle">Védd meg a galaxist az idegen támadóktól!</p>
+                <div class="controls-info">
+                    <p>Irányítás: NYÍL BILLENTYŰK</p>
+                    <p>Lövés: SZÓKÖZ</p>
+                </div>
+                <button id="startButton" class="game-button">JÁTÉK INDÍTÁSA</button>
+            </div>
+        </div>
+        
+        <!-- Game Over Screen -->
+        <div id="gameOverScreen" class="screen hidden">
+            <div class="screen-content">
+                <h1 class="game-title">KÜLDETÉS BEFEJEZVE</h1>
+                <p id="finalScore" class="final-score">Pontszám: 0</p>
+                <p id="finalLevel" class="final-level">Elért szint: 1</p>
+                <button id="restartButton" class="game-button">ÚJ JÁTÉK</button>
+            </div>
+        </div>
+        
+        <!-- Level Complete Screen -->
+        <div id="levelCompleteScreen" class="screen hidden">
+            <div class="screen-content">
+                <h1 class="level-title">SZINT TELJESÍTVE!</h1>
+                <p id="levelCompleteText" class="level-text">Következő szint...</p>
+                <button id="nextLevelButton" class="game-button">FOLYTATÁS</button>
+            </div>
+        </div>
+        
+        <!-- Upgrade Screen -->
+        <div id="upgradeScreen" class="screen hidden">
+            <div class="screen-content">
+                <button id="closeUpgradeButton" class="close-button">×</button>
+                <h1 class="level-title">FEJLESZTÉS VÁLASZTÁSA</h1>
+                <p class="level-text">Válassz egy fejlesztést:</p>
+                <div id="upgradeOptions" class="upgrade-options">
+                    <!-- Upgrade buttons will be generated dynamically -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Settings Menu -->
+        <div id="settingsScreen" class="screen hidden">
+            <div class="screen-content">
+                <button id="closeSettingsButton" class="close-button">×</button>
+                <h1 class="level-title">BEÁLLÍTÁSOK</h1>
+                
+                <div class="settings-options">
+                    <div class="setting-item">
+                        <label>Hangeffektek:</label>
+                        <button id="soundToggle" class="toggle-button">BE</button>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label>Háttérzene:</label>
+                        <button id="musicToggle" class="toggle-button">BE</button>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label>Nehézség:</label>
+                        <select id="difficultySelect" class="difficulty-select">
+                            <option value="easy">Könnyű</option>
+                            <option value="normal" selected>Normál</option>
+                            <option value="hard">Nehéz</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <h2 class="achievement-title">EREDMÉNYEK</h2>
+                <div id="achievementsList" class="achievements-list">
+                    <!-- Achievements will be generated dynamically -->
+                </div>
+                
+                <button id="resetProgressButton" class="reset-button">EREDMÉNYEK TÖRLÉSE</button>
+            </div>
+        </div>
+        
+        <!-- Pause Screen -->
+        <div id="pauseScreen" class="screen hidden">
+            <div class="screen-content">
+                <h1 class="level-title">SZÜNET</h1>
+                <p class="level-text">A játék szünetel</p>
+                <div class="pause-buttons">
+                    <button id="resumeButton" class="game-button">FOLYTATÁS</button>
+                    <button id="mainMenuButton" class="game-button">FŐMENÜ</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Settings and Pause Buttons -->
+        <div id="controlButtonsContainer">
+            <button id="settingsButton" class="control-btn settings-btn">⚙️</button>
+            <button id="pauseButton" class="control-btn pause-btn">⏸️</button>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>

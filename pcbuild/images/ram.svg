@@ -1,0 +1,42 @@
+<svg width="15" height="80" viewBox="0 0 15 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- RAM PCB -->
+  <rect x="1" y="5" width="13" height="70" rx="1" fill="#2d5a2d" stroke="#4a5568" stroke-width="1"/>
+  
+  <!-- Memory chips -->
+  <g fill="#1a202c" stroke="#2d3748" stroke-width="0.5">
+    <rect x="2" y="8" width="11" height="8" rx="0.5"/>
+    <rect x="2" y="18" width="11" height="8" rx="0.5"/>
+    <rect x="2" y="28" width="11" height="8" rx="0.5"/>
+    <rect x="2" y="38" width="11" height="8" rx="0.5"/>
+    <rect x="2" y="48" width="11" height="8" rx="0.5"/>
+    <rect x="2" y="58" width="11" height="8" rx="0.5"/>
+    <rect x="2" y="68" width="11" height="6" rx="0.5"/>
+  </g>
+  
+  <!-- Notch -->
+  <rect x="6" y="4" width="3" height="2" fill="#2d3748"/>
+  
+  <!-- Gold contacts -->
+  <g fill="#fbd38d">
+    <rect x="0.5" y="76" width="1" height="1"/>
+    <rect x="2" y="76" width="1" height="1"/>
+    <rect x="3.5" y="76" width="1" height="1"/>
+    <rect x="5" y="76" width="1" height="1"/>
+    <rect x="6.5" y="76" width="1" height="1"/>
+    <rect x="8" y="76" width="1" height="1"/>
+    <rect x="9.5" y="76" width="1" height="1"/>
+    <rect x="11" y="76" width="1" height="1"/>
+    <rect x="12.5" y="76" width="1" height="1"/>
+    <rect x="14" y="76" width="1" height="1"/>
+  </g>
+  
+  <!-- Heat spreader -->
+  <rect x="1.5" y="1" width="12" height="3" rx="0.5" fill="#4a5568" stroke="#718096" stroke-width="0.5"/>
+  
+  <!-- Brand label -->
+  <text x="7.5" y="42" text-anchor="middle" font-family="Arial, sans-serif" font-size="3" fill="#e2e8f0" font-weight="bold">DDR5</text>
+  <text x="7.5" y="46" text-anchor="middle" font-family="Arial, sans-serif" font-size="2.5" fill="#cbd5e1">32GB</text>
+  
+  <!-- LED strip -->
+  <rect x="2" y="2" width="11" height="1" rx="0.5" fill="#10b981" opacity="0.8"/>
+</svg>
